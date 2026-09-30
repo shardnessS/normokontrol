@@ -1,0 +1,121 @@
+id: gost-7.32-2017
+name: ГОСТ 7.32-2017 (базовый)
+country: RU
+verified: true
+source_docs:
+  - "ГОСТ 7.32-2017 «СИБИД. Отчет о научно-исследовательской работе. Структура и правила оформления», раздел 6"
+
+page:
+  size: A4
+  orientation: portrait
+  margins_mm: { left: 30, right: 15, top: 20, bottom: 20 }
+
+text:
+  font: Times New Roman
+  size_pt: 14
+  min_size_pt: 12
+  color: "000000"
+  line_spacing: 1.5
+  first_line_indent_cm: 1.25
+  align: justify
+  space_before_pt: 0
+  space_after_pt: 0
+
+headings:
+  structural_titles:
+    - СПИСОК ИСПОЛНИТЕЛЕЙ
+    - РЕФЕРАТ
+    - СОДЕРЖАНИЕ
+    - ТЕРМИНЫ И ОПРЕДЕЛЕНИЯ
+    - ПЕРЕЧЕНЬ СОКРАЩЕНИЙ И ОБОЗНАЧЕНИЙ
+    - ВВЕДЕНИЕ
+    - ЗАКЛЮЧЕНИЕ
+    - СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ
+    - ПРИЛОЖЕНИЕ
+  structural: { case: upper, align: center, bold: true, new_page: true }
+  level1: { case: first_upper, align: indent, bold: true, new_page: true, number_format: "{n1}" }
+  level2: { case: first_upper, align: indent, bold: true, new_page: false, number_format: "{n1}.{n2}" }
+
+page_numbers: { position: bottom-center, show_on_title: false }
+
+figures:
+  numbering: continuous
+  caption: "Рисунок {num} — {title}"
+  position: below
+  caption_align: center
+  caption_line_spacing: 1.0
+
+tables:
+  numbering: continuous
+  caption: "Таблица {num} — {title}"
+  continuation: "Продолжение таблицы {num}"
+  position: above
+  caption_align: left
+  caption_line_spacing: 1.0
+  font_size_pt: 12
+
+formulas:
+  numbering: continuous
+  format: "({num})"
+  blank_line_around: true
+
+bibliography:
+  title: СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ
+  order: by_citation
+  numbering: "{n}. "
+  standard: gost-r-7.0.100-2018
+
+appendices:
+  title: "ПРИЛОЖЕНИЕ {letter}"
+  letters: АБВГДЕЖИКЛМНПРСТУФХЦШЩЭЮЯ
+  new_page: true
+
+lists:
+  bullet: "—"
+  letters: абвгдежиклмнпрстуфхцшщэюя
+
+title_page: { template: generic-student }
+
+rules: {}
+
+sources:
+  page.size: "ГОСТ 7.32-2017, п. 6.1.1"
+  page.orientation: "ГОСТ 7.32-2017, п. 6.1.1 (формат А4 по ГОСТ 9327; ориентация не оговорена, книжная — по умолчанию)"
+  page.margins_mm: "ГОСТ 7.32-2017, п. 6.1.1"
+  text.font: "ГОСТ 7.32-2017, п. 6.1.1 (рекомендуемый шрифт)"
+  text.size_pt: "Не ГОСТ: типовое требование вузов (ГОСТ требует не менее 12 пт)"
+  text.min_size_pt: "ГОСТ 7.32-2017, п. 6.1.1"
+  text.color: "ГОСТ 7.32-2017, п. 6.1.1"
+  text.line_spacing: "ГОСТ 7.32-2017, п. 6.1.1"
+  text.first_line_indent_cm: "ГОСТ 7.32-2017, п. 6.1.1"
+  text.align: "Не ГОСТ: типовое требование вузов"
+  text.space_before_pt: "Не ГОСТ: типовое требование вузов"
+  text.space_after_pt: "Не ГОСТ: типовое требование вузов"
+  headings.structural_titles: "ГОСТ 7.32-2017, п. 6.2.1"
+  headings.structural: "ГОСТ 7.32-2017, пп. 6.1.1, 6.2.1"
+  headings.level1: "ГОСТ 7.32-2017, пп. 6.1.1, 6.2.1, 6.2.3, 6.4.1"
+  headings.level2: "ГОСТ 7.32-2017, пп. 6.1.1, 6.2.3, 6.4.1"
+  page_numbers: "ГОСТ 7.32-2017, пп. 6.3.1, 6.3.2"
+  figures.numbering: "ГОСТ 7.32-2017, пп. 6.5.4, 6.5.6"
+  figures.caption: "ГОСТ 7.32-2017, п. 6.5.7 (знак тире — TODO(verify))"
+  figures.position: "ГОСТ 7.32-2017, п. 6.5.7"
+  figures.caption_align: "ГОСТ 7.32-2017, п. 6.5.7"
+  figures.caption_line_spacing: "ГОСТ 7.32-2017, п. 6.5.8"
+  tables.numbering: "ГОСТ 7.32-2017, п. 6.6.4"
+  tables.caption: "ГОСТ 7.32-2017, п. 6.6.3 (знак тире — TODO(verify))"
+  tables.continuation: "ГОСТ 7.32-2017, п. 6.6.3"
+  tables.position: "ГОСТ 7.32-2017, п. 6.6.3"
+  tables.caption_align: "ГОСТ 7.32-2017, п. 6.6.3"
+  tables.caption_line_spacing: "ГОСТ 7.32-2017, п. 6.6.3"
+  tables.font_size_pt: "ГОСТ 7.32-2017, п. 6.6.7 (допускается меньший шрифт; 12 пт — не ГОСТ)"
+  formulas.numbering: "ГОСТ 7.32-2017, пп. 6.8.3, 6.8.5"
+  formulas.format: "ГОСТ 7.32-2017, п. 6.8.3"
+  formulas.blank_line_around: "ГОСТ 7.32-2017, п. 6.8.1"
+  bibliography.title: "ГОСТ 7.32-2017, п. 6.2.1"
+  bibliography.order: "ГОСТ 7.32-2017, п. 6.16"
+  bibliography.numbering: "ГОСТ 7.32-2017, п. 6.16"
+  bibliography.standard: "ГОСТ Р 7.0.100-2018"
+  appendices.title: "ГОСТ 7.32-2017, пп. 6.17.3, 6.17.4"
+  appendices.letters: "ГОСТ 7.32-2017, п. 6.17.4"
+  appendices.new_page: "ГОСТ 7.32-2017, п. 6.17.3"
+  lists: "ГОСТ 7.32-2017, п. 6.4.6"
