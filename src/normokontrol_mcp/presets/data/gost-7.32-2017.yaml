@@ -64,6 +64,8 @@ bibliography:
   order: by_citation
   numbering: "{n}. "
   standard: gost-r-7.0.100-2018
+  dash: "–"
+  content_type: true
 
 appendices:
   title: "ПРИЛОЖЕНИЕ {letter}"
@@ -115,6 +117,8 @@ sources:
   bibliography.order: "ГОСТ 7.32-2017, п. 6.16"
   bibliography.numbering: "ГОСТ 7.32-2017, п. 6.16"
   bibliography.standard: "ГОСТ Р 7.0.100-2018"
+  bibliography.dash: "ГОСТ Р 7.0.100-2018, п. 4.6.1 (предписанный знак «. – »)"
+  bibliography.content_type: "ГОСТ Р 7.0.100-2018, п. 4.3 (область 9 — условно-обязательная)"
   appendices.title: "ГОСТ 7.32-2017, пп. 6.17.3, 6.17.4"
   appendices.letters: "ГОСТ 7.32-2017, п. 6.17.4"
   appendices.new_page: "ГОСТ 7.32-2017, п. 6.17.3"

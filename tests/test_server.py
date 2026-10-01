@@ -4,6 +4,7 @@ import pytest
 from mcp import Client
 
 from normokontrol_mcp import __version__
+from normokontrol_mcp.bibliography.names import NBSP
 from normokontrol_mcp.server import mcp
 
 
@@ -69,3 +70,46 @@ async def test_preset_resource() -> None:
     text = result.contents[0].text  # type: ignore[union-attr]
     assert "id: gost-7.32-2017" in text
     assert "left: 30" in text
+
+
+@pytest.mark.anyio
+async def test_format_bibliography_tool() -> None:
+    sources = [
+        {
+            "type": "book",
+            "id": "ivanov2020",
+            "authors": ["Иванов Иван Иванович", "Петров Пётр Петрович"],
+            "title": "Основы программирования",
+            "subtitle": "учебник",
+            "edition": "2-е изд., перераб. и доп.",
+            "city": "Москва",
+            "publisher": "Юрайт",
+            "year": 2020,
+            "pages": 350,
+            "isbn": "978-5-534-00000-0",
+        },
+        {"type": "web", "id": "site", "title": "Документация Python", "url": "https://docs.python.org/3/"},
+    ]
+    async with Client(mcp) as client:
+        result = await client.call_tool("format_bibliography", {"sources": sources})
+    assert not result.is_error, result.content
+    data = result.structured_content
+    assert data is not None
+    assert data["entries"][0].replace(NBSP, " ") == (
+        "1. Иванов, И. И. Основы программирования : учебник / И. И. Иванов, П. П. Петров. – "
+        "2-е изд., перераб. и доп. – Москва : Юрайт, 2020. – 350 с. – ISBN 978-5-534-00000-0. – "
+        "Текст : непосредственный."
+    )
+    assert data["entries"][1].startswith("2. Документация Python")
+    assert [w["source_id"] for w in data["warnings"]] == ["site"]
+    assert "дата обращения" in data["warnings"][0]["message_ru"]
+
+
+@pytest.mark.anyio
+async def test_format_bibliography_unknown_preset() -> None:
+    async with Client(mcp) as client:
+        result = await client.call_tool(
+            "format_bibliography", {"sources": [{"type": "web", "title": "x"}], "preset_id": "nope"}
+        )
+    assert result.is_error
+    assert "preset_not_found" in result.content[0].text  # type: ignore[union-attr]

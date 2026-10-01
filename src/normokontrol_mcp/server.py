@@ -3,12 +3,15 @@
 import json
 from collections.abc import Callable
 from functools import wraps
-from typing import ParamSpec, TypeVar
+from typing import Literal, ParamSpec, TypeVar
 
 from mcp.server.mcpserver import MCPServer
 from mcp.server.mcpserver.exceptions import ResourceError, ToolError
+from pydantic import BaseModel
 
 from normokontrol_mcp import __version__
+from normokontrol_mcp.bibliography import formatter
+from normokontrol_mcp.bibliography.models import Source
 from normokontrol_mcp.errors import NormokontrolError
 from normokontrol_mcp.presets import loader
 from normokontrol_mcp.presets.describe import describe_preset
@@ -72,6 +75,48 @@ def get_rules(preset_id: str) -> str:
     Use this to answer the user's questions about formatting requirements.
     """
     return describe_preset(loader.load_preset(preset_id))
+
+
+class BibliographyWarning(BaseModel):
+    index: int
+    source_id: str | None
+    message_ru: str
+
+
+class BibliographyResult(BaseModel):
+    text: str
+    entries: list[str]
+    warnings: list[BibliographyWarning]
+
+
+@mcp.tool()
+@_structured_errors(ToolError)
+def format_bibliography(
+    sources: list[Source],
+    order: Literal["by_citation", "alphabetical"] | None = None,
+    preset_id: str = "gost-7.32-2017",
+) -> BibliographyResult:
+    """Format a numbered reference list per GOST R 7.0.100-2018 from structured sources.
+
+    Pass sources in the order they are first cited in the text. Supported `type`s: book, article,
+    web (a page with `site`, or a whole website), law, standard. Copy names, titles and numbers exactly
+    as printed; do not invent missing data. `order` defaults to the preset's rule. The result has the
+    ready list (`text`, one entry per line), `entries`, and Russian `warnings` about missing fields —
+    show them to the user and ask for the data rather than guessing.
+    """
+    preset = loader.load_preset(preset_id)
+    style = formatter.Style(dash=preset.bibliography.dash, content_type=preset.bibliography.content_type)
+    result = formatter.format_bibliography(
+        sources,
+        order=order or preset.bibliography.order,
+        numbering=preset.bibliography.numbering,
+        style=style,
+    )
+    return BibliographyResult(
+        text=result.text,
+        entries=result.entries,
+        warnings=[BibliographyWarning(**vars(w)) for w in result.warnings],
+    )
 
 
 @mcp.resource(

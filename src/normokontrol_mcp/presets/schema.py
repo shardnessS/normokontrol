@@ -161,6 +161,8 @@ class Bibliography(_Strict):
     order: Literal["by_citation", "alphabetical"]
     numbering: str
     standard: Literal["gost-r-7.0.100-2018"]
+    dash: Literal["–", "—"]
+    content_type: bool
 
     @field_validator("numbering")
     @classmethod

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
+from normokontrol_mcp.bibliography.names import NBSP
 from normokontrol_mcp.presets.schema import HeadingStyle, Preset
 
 _ALIGN = {
@@ -214,6 +215,16 @@ def _rules(p: Preset) -> list[tuple[str, list[tuple[str, str, Callable[[], str]]
                     lambda: f"«{p.bibliography.numbering.format(n=1).strip()}», с абзацного отступа",
                 ),
                 ("bibliography.standard", "Описание источников", lambda: "по ГОСТ Р 7.0.100-2018"),
+                (
+                    "bibliography.dash",
+                    "Разделитель областей",
+                    lambda: f"«.{NBSP}{p.bibliography.dash} »",
+                ),
+                (
+                    "bibliography.content_type",
+                    "Вид содержания («Текст : непосредственный»)",
+                    lambda: _yes(p.bibliography.content_type),
+                ),
             ],
         ),
         (
