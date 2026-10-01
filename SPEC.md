@@ -433,7 +433,7 @@ MVP: `book`, `article`, `web`, `law`, `standard`. Остальные — эта�
 - [x] `uv init`, `pyproject.toml`, точка входа `normokontrol-mcp` (stdio)
 - [x] Структура папок из раздела 4
 - [x] ruff, mypy, pytest, pre-commit
-- [ ] GitHub Actions: lint + типы + тесты (Linux, macOS, Windows) — workflow написан, ждёт удалённого репозитория для первого прогона
+- [x] GitHub Actions: lint + типы + тесты (Linux, macOS, Windows)
 - [x] Инструмент-заглушка `ping`, проверка через MCP Inspector (`npx @modelcontextprotocol/inspector`)
 - [x] `docs/install.md` с конфигами для Claude Desktop, Claude Code, Cursor
 - [x] LICENSE (MIT)
