@@ -1,0 +1,79 @@
+{
+  "status": "ok",
+  "message": {
+    "DOI": "10.1016/j.patcog.2017.10.013",
+    "type": "journal-article",
+    "title": [
+      "Recent advances in convolutional neural networks"
+    ],
+    "subtitle": [],
+    "author": [
+      {
+        "given": "Jiuxiang",
+        "family": "Gu"
+      },
+      {
+        "given": "Zhenhua",
+        "family": "Wang"
+      },
+      {
+        "given": "Jason",
+        "family": "Kuen"
+      },
+      {
+        "given": "Lianyang",
+        "family": "Ma"
+      },
+      {
+        "given": "Amir",
+        "family": "Shahroudy"
+      },
+      {
+        "given": "Bing",
+        "family": "Shuai"
+      },
+      {
+        "given": "Ting",
+        "family": "Liu"
+      },
+      {
+        "given": "Xingxing",
+        "family": "Wang"
+      },
+      {
+        "given": "Gang",
+        "family": "Wang"
+      },
+      {
+        "given": "Jianfei",
+        "family": "Cai"
+      },
+      {
+        "given": "Tsuhan",
+        "family": "Chen"
+      }
+    ],
+    "container-title": [
+      "Pattern Recognition"
+    ],
+    "volume": "77",
+    "page": "354-377",
+    "publisher": "Elsevier BV",
+    "issued": {
+      "date-parts": [
+        [
+          2018,
+          5
+        ]
+      ]
+    },
+    "published-print": {
+      "date-parts": [
+        [
+          2018,
+          5
+        ]
+      ]
+    }
+  }
+}

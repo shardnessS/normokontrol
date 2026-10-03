@@ -326,9 +326,11 @@ $$ E = mc^2 $$ {#eq:energy}
 
 ### 7.3 Типы источников (модель `Source`)
 
-`book`, `book_chapter`, `article` (журнал), `conference_paper`, `thesis` (диссертация, автореферат), `law` (нормативный акт), `standard` (ГОСТ), `patent`, `web` (сайт/страница), `electronic_book`, `multivolume`.
+`book`, `book_chapter`, `article` (журнал), `conference_paper`, `thesis` (диссертация, автореферат), `law` (нормативный акт), `standard` (ГОСТ), `patent`, `web` (сайт/страница).
 
-MVP: `book`, `article`, `web`, `law`, `standard`. Остальные — этап 3.
+Электронная книга — `book` с `url` (и `site` для ЭБС); отдельный том многотомного издания — `book`, у которого номер тома входит в заглавие, как в источнике. Отдельные типы `electronic_book` и `multivolume` не нужны (решение этапа 4, `docs/decisions.md`).
+
+Этап 2: `book`, `article`, `web`, `law`, `standard`. Этап 4: `book_chapter`, `conference_paper`, `thesis`, `patent`.
 
 ---
 
@@ -459,12 +461,12 @@ MVP: `book`, `article`, `web`, `law`, `standard`. Остальные — эта�
 **Готово, когда:** оба скилла подключены в claude.ai и в Claude Code, список литературы оформляется из чата, пользователь проверил вручную.
 
 ### Этап 4. Библиография — ввод
-- [ ] `lookup.py`: DOI → Crossref API; ISBN → Open Library; URL → `<title>`, `og:*`, `citation_*` мета-теги (через `urllib`)
-- [ ] Кэш запросов на диске, таймауты, режим offline; без сети — инструкция в SKILL.md искать данные веб-поиском Claude
-- [ ] `format_bibliography` принимает смесь `Source` и строк (DOI/ISBN/URL); нераспознанные строки возвращаются списком «нужно уточнить» — их структурирует Claude
-- [ ] Остальные типы источников (раздел 7.3)
-- [ ] Сценарий «список литературы из любых ссылок» в SKILL.md
-- [ ] Тесты с замоканной сетью
+- [x] `lookup.py`: DOI → Crossref API; ISBN → Open Library; URL → `<title>`, `og:*`, `citation_*` мета-теги (через `urllib`)
+- [x] Кэш запросов на диске, таймауты, режим offline; без сети — инструкция в SKILL.md искать данные веб-поиском Claude
+- [x] `format_bibliography` принимает смесь `Source` и строк (DOI/ISBN/URL); нераспознанные строки возвращаются списком «нужно уточнить» — их структурирует Claude
+- [x] Остальные типы источников (раздел 7.3)
+- [x] Сценарий «список литературы из любых ссылок» в SKILL.md
+- [x] Тесты с замоканной сетью
 
 ### Этап 5. Сборка документа (ядро) — скилл `gost-document`
 - [ ] Решение: pandoc или чистый `python-docx` (с учётом окружения claude.ai и локального), записать в `docs/decisions.md`

@@ -8,7 +8,17 @@ from dataclasses import dataclass, field
 from typing import Literal
 
 from normokontrol.bibliography import names
-from normokontrol.bibliography.models import Article, Book, Law, Source, Standard, Web
+from normokontrol.bibliography.models import (
+    Article,
+    Book,
+    BookChapter,
+    Law,
+    Patent,
+    Source,
+    Standard,
+    Thesis,
+    Web,
+)
 from normokontrol.bibliography.names import NBSP
 
 Order = Literal["by_citation", "alphabetical"]
@@ -42,6 +52,12 @@ def format_source(source: Source, style: Style | None = None) -> str:
     style = style or Style()
     if isinstance(source, Book):
         return _book(source, style)
+    if isinstance(source, BookChapter):
+        return _chapter(source, style)
+    if isinstance(source, Thesis):
+        return _thesis(source, style)
+    if isinstance(source, Patent):
+        return _patent(source, style)
     if isinstance(source, Article):
         return _article(source, style)
     if isinstance(source, Web):
@@ -57,13 +73,19 @@ def format_bibliography(
     order: Order = "by_citation",
     numbering: str = "{n}. ",
     style: Style | None = None,
+    indices: Sequence[int] | None = None,
 ) -> FormattedList:
-    """Numbered list. `by_citation` keeps the input order (order of first citation)."""
+    """Numbered list. `by_citation` keeps the input order (order of first citation).
+
+    `indices` are the 1-based positions of the sources in the user's input, used in warnings when
+    some input items were not sources (e.g. unresolved identifiers).
+    """
     style = style or Style()
+    positions = list(indices) if indices is not None else list(range(1, len(sources) + 1))
     records = [(format_source(source, style), source) for source in sources]
     warnings = [
         EntryWarning(index, source.id, message)
-        for index, source in enumerate(sources, start=1)
+        for index, source in zip(positions, sources, strict=True)
         for message in missing_fields(source)
     ]
     if order == "alphabetical":
@@ -95,6 +117,24 @@ def missing_fields(source: Source) -> list[str]:
         need(source.year, "год издания (year)")
         if source.site is None:
             need(source.pages, "количество страниц (pages)")
+    elif isinstance(source, BookChapter):
+        need(source.book_title, "заглавие книги или сборника (book_title)")
+        need(source.year, "год издания (year)")
+        if source.url is None:
+            need(source.city, "место издания (city)")
+            need(source.publisher, "издательство (publisher)")
+            need(source.pages, "страницы (pages)")
+    elif isinstance(source, Thesis):
+        need(source.authors, "автор (authors)")
+        need(source.degree, "учёная степень (degree), например «кандидата технических наук»")
+        need(source.city, "место защиты или подготовки (city)")
+        need(source.year, "год (year)")
+        need(source.pages, "количество страниц (pages)")
+    elif isinstance(source, Patent):
+        need(source.number, "номер патента (number)")
+        need(source.application, "номер заявки (application)")
+        need(source.filed, "дата подачи заявки (filed)")
+        need(source.published, "дата публикации (published)")
     elif isinstance(source, Article):
         need(source.journal, "название журнала (journal)")
         need(source.year, "год (year)")
@@ -133,9 +173,9 @@ def _book(s: Book, style: Style) -> str:
         *s.notes,
     ]
     if s.site is None:
-        areas += [*_online(s), _isbn(s.isbn), _content_type(s, style)]
+        areas += [*_online(s), _isbn(s.isbn), _doi(s.doi), _content_type(s, style)]
         return _areas(areas, style)
-    areas += [_isbn(s.isbn), _content_type(s, style)]
+    areas += [_isbn(s.isbn), _doi(s.doi), _content_type(s, style)]
     return _component(_areas(areas, style, final=False), [_host_site(s.site), *_online(s)], style)
 
 
@@ -145,7 +185,7 @@ def _article(s: Article, style: Style) -> str:
         _with_heading(
             s.authors, _title_area(s.title, s.subtitle, _responsibility(s.authors, s.responsibility, foreign))
         ),
-        f"DOI {s.doi}" if s.doi else None,
+        _doi(s.doi),
         _content_type(s, style),
     ]
     numbering = ", ".join(
@@ -165,6 +205,70 @@ def _article(s: Article, style: Style) -> str:
         *_online(s),
     ]
     return _component(_areas(part, style, final=False), host, style)
+
+
+def _chapter(s: BookChapter, style: Style) -> str:
+    foreign = not names.is_cyrillic(s.title)
+    part = [
+        _with_heading(
+            s.authors, _title_area(s.title, s.subtitle, _responsibility(s.authors, s.responsibility, foreign))
+        ),
+        _doi(s.doi),
+        _content_type(s, style),
+    ]
+    host = [
+        _title_area(s.book_title or "", s.book_subtitle, " ; ".join(s.book_responsibility) or None) or None,
+        s.edition,
+        _publication(s.city, s.publisher, s.year),
+        _isbn(s.isbn),
+        s.part,
+        s.section,
+        f"{'P.' if foreign else 'С.'}{NBSP}{_range(s.pages)}" if s.pages else None,
+        *_online(s),
+    ]
+    return _component(_areas(part, style, final=False), host, style)
+
+
+def _thesis(s: Thesis, style: Style) -> str:
+    work = "диссертация" if s.kind == "dissertation" else "автореферат диссертации"
+    if s.degree:
+        work += f" на соискание ученой степени {s.degree}"
+    info = " : ".join(
+        item for item in (s.subtitle, f"специальность {s.specialty}" if s.specialty else None, work) if item
+    )
+    # В диссертациях имя автора после косой черты приводят как на титульном листе (полностью).
+    responsibility = " ; ".join([", ".join(s.authors), *s.responsibility] if s.authors else s.responsibility)
+    areas = [
+        _with_heading(s.authors, _title_area(s.title, info, responsibility or None)),
+        _publication(s.city, None, s.year),
+        _extent(s.pages, s.illustrations, foreign=False),
+        *s.notes,
+        *_online(s),
+        _content_type(s, style),
+    ]
+    return _areas(areas, style)
+
+
+def _patent(s: Patent, style: Style) -> str:
+    heading = f"Патент №{NBSP}{s.number} {s.country}" if s.number else f"Патент {s.country}"
+    if s.classification:
+        heading += f", {s.classification}"
+    info = [
+        f"№{NBSP}{s.application}" if s.application else None,
+        f"заявлено {s.filed:%d.%m.%Y}" if s.filed else None,
+        f"опубликовано {s.published:%d.%m.%Y}" if s.published else None,
+    ]
+    responsibility = " ; ".join(
+        [", ".join(s.inventors), *s.responsibility] if s.inventors else s.responsibility
+    )
+    title_area = _title_area(s.title, " : ".join(i for i in info if i) or None, responsibility or None)
+    areas = [
+        f"{heading}. {title_area}",
+        _extent(s.pages, s.illustrations, foreign=False),
+        *_online(s),
+        _content_type(s, style),
+    ]
+    return _areas(areas, style)
 
 
 def _web(s: Web, style: Style) -> str:
@@ -268,11 +372,15 @@ def _extent(pages: int | str | None, illustrations: str | None, foreign: bool) -
     return f"{text} : {illustrations}" if illustrations else text
 
 
+def _doi(doi: str | None) -> str | None:
+    return f"DOI {doi}" if doi else None
+
+
 def _isbn(isbn: str | None) -> str | None:
     return f"ISBN {isbn}" if isbn else None
 
 
-def _online(s: Book | Article | Web | Law | Standard) -> list[str | None]:
+def _online(s: Source) -> list[str | None]:
     if s.url is None:
         return []
     note = f"URL: {s.url}"
@@ -285,7 +393,7 @@ def _host_site(site: str) -> str:
     return site if " : " in site else f"{site} : [сайт]"
 
 
-def _content_type(s: Book | Article | Web | Law | Standard, style: Style) -> str | None:
+def _content_type(s: Source, style: Style) -> str | None:
     if not style.content_type:
         return None
     return "Текст : электронный" if s.electronic else "Текст : непосредственный"

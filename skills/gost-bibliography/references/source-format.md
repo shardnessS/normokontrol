@@ -2,7 +2,17 @@
 
 The input file is a JSON (or YAML) list of sources, or an object
 `{"sources": [...], "order": "by_citation" | "alphabetical", "preset": "<id>"}`.
-Each source has a `type`. Unknown fields are rejected. Omit fields you do not know.
+Each source is an object with a `type`, or a string with a DOI, ISBN or URL to look up:
+
+```json
+["10.1016/j.patcog.2017.10.013", "ISBN 978-0-14-032872-1", "https://docs.python.org/3/"]
+```
+
+Unknown fields are rejected. Omit fields you do not know.
+
+E-books are `book` with `url` (and `site` for an e-library). A single volume of a multi-volume edition
+is a `book` whose `title` carries the volume as printed: «Возрастная анатомия и физиология. В 2 т. Т. 1.
+Организм человека…».
 
 Common fields (all types):
 
@@ -104,6 +114,70 @@ language automatically (Vol., no., P.).
   "issue": 16,
   "pages": "6850-6854",
   "doi": "10.3923/jeasci.2018.6850.6854"
+}
+```
+
+## book_chapter, conference_paper (part of a book, collection or proceedings)
+
+Same fields for both types: `authors`, `responsibility`, `book_title`, `book_subtitle`,
+`book_responsibility` (editors, compilers, issuing organisation of the book, as printed), `edition`,
+`city`, `publisher`, `year`, `isbn`, `part` («Вып. 25»), `section` («Раздел 1»), `pages`, `doi`, and
+`url` / `accessed` for online copies.
+
+```json
+{
+  "type": "conference_paper",
+  "authors": ["Горбунова Л. Н.", "Мармус Т. Н."],
+  "title": "Тестирование как один из методов активизации учебного процесса",
+  "book_title": "Инженерное образование: опыт, перспективы, проблемы",
+  "book_subtitle": "материалы всерос. конф. с междунар. участием (Благовещенск, 16 ноября 2018 г.)",
+  "city": "Благовещенск",
+  "publisher": "Изд-во Дальневосточного ГАУ",
+  "year": 2018,
+  "pages": "77-82"
+}
+```
+
+## thesis (dissertation or abstract of a dissertation)
+
+Fields: `authors` (the author as on the title page, usually the full name), `kind` (`dissertation` or
+`abstract` for автореферат), `specialty` (code and name), `degree` (in genitive: «кандидата
+педагогических наук»), `responsibility` (the institution), `city`, `year`, `pages`, `illustrations`,
+`notes` («Место защиты: …»).
+
+```json
+{
+  "type": "thesis",
+  "authors": ["Аврамова Елена Викторовна"],
+  "title": "Публичная библиотека в системе непрерывного библиотечно-информационного образования",
+  "specialty": "05.25.03 «Библиотековедение, библиографоведение и книговедение»",
+  "degree": "кандидата педагогических наук",
+  "responsibility": ["Санкт-Петербургский государственный институт культуры"],
+  "city": "Санкт-Петербург",
+  "year": 2017,
+  "pages": 361
+}
+```
+
+## patent
+
+Fields: `number`, `country` (default «Российская Федерация»), `classification` («МПК …» as printed),
+`application`, `filed`, `published` (dates), `inventors` (as printed: «Артеменко К. И.»),
+`responsibility` («заявитель БГТУ», «патентообладатель …»), `pages`, `illustrations`.
+
+```json
+{
+  "type": "patent",
+  "number": "2637215",
+  "classification": "МПК B02C 19/16 (2006.01), B02C 17/00 (2006.01)",
+  "title": "Вибрационная мельница",
+  "application": "2017105030",
+  "filed": "15.02.2017",
+  "published": "01.12.2017",
+  "inventors": ["Артеменко К. И.", "Богданов Н. Э."],
+  "responsibility": ["заявитель БГТУ"],
+  "pages": 4,
+  "illustrations": "ил."
 }
 ```
 

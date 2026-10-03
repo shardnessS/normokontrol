@@ -1,0 +1,17 @@
+{
+  "ISBN:9780140328721": {
+    "title": "Fantastic Mr. Fox",
+    "authors": [
+      {
+        "name": "Roald Dahl"
+      }
+    ],
+    "publishers": [
+      {
+        "name": "Puffin"
+      }
+    ],
+    "publish_date": "October 1, 1988",
+    "number_of_pages": 96
+  }
+}

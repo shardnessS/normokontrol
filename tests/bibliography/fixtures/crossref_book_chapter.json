@@ -1,0 +1,59 @@
+{
+  "status": "ok",
+  "message": {
+    "DOI": "10.1007/978-3-319-24574-4_28",
+    "type": "book-chapter",
+    "title": [
+      "U-Net: Convolutional Networks for Biomedical Image Segmentation"
+    ],
+    "subtitle": [],
+    "author": [
+      {
+        "given": "Olaf",
+        "family": "Ronneberger"
+      },
+      {
+        "given": "Philipp",
+        "family": "Fischer"
+      },
+      {
+        "given": "Thomas",
+        "family": "Brox"
+      }
+    ],
+    "container-title": [
+      "Lecture Notes in Computer Science",
+      "Medical Image Computing and Computer-Assisted Intervention – MICCAI 2015"
+    ],
+    "page": "234-241",
+    "publisher": "Springer International Publishing",
+    "publisher-location": "Cham",
+    "ISBN": [
+      "9783319245737",
+      "9783319245744"
+    ],
+    "issued": {
+      "date-parts": [
+        [
+          2015
+        ]
+      ]
+    },
+    "published-print": {
+      "date-parts": [
+        [
+          2015
+        ]
+      ]
+    },
+    "published-online": {
+      "date-parts": [
+        [
+          2015,
+          11,
+          18
+        ]
+      ]
+    }
+  }
+}

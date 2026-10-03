@@ -1,4 +1,5 @@
 import json
+import os
 import re
 import subprocess
 import sys
@@ -9,7 +10,8 @@ import pytest
 from pydantic import TypeAdapter
 
 from normokontrol import __version__
-from normokontrol.bibliography.models import Source
+from normokontrol.bibliography.identifiers import classify
+from normokontrol.bibliography.models import SOURCE_TYPES, Source
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools"))
@@ -63,11 +65,16 @@ def test_reference_examples_are_valid_sources() -> None:
     text = (ROOT / "skills" / "gost-bibliography" / "references" / "source-format.md").read_text(
         encoding="utf-8"
     )
-    blocks = re.findall(r"```json\n(.*?)```", text, re.DOTALL)
-    assert len(blocks) >= 8
+    blocks = [json.loads(block) for block in re.findall(r"```json\n(.*?)```", text, re.DOTALL)]
+    assert len(blocks) >= 11
     adapter: TypeAdapter[Source] = TypeAdapter(Source)
     for block in blocks:
-        adapter.validate_python(json.loads(block))
+        if isinstance(block, list):  # строки с DOI, ISBN, URL
+            assert all(classify(item) is not None for item in block)
+        else:
+            adapter.validate_python(block)
+    documented = {block["type"] for block in blocks if isinstance(block, dict)}
+    assert documented == set(SOURCE_TYPES) - {"book_chapter"}  # book_chapter описан вместе с conference_paper
 
 
 def test_versions_in_sync() -> None:
@@ -156,3 +163,21 @@ def test_build_is_deterministic(tmp_path: Path) -> None:
     second = build_skills.build_all(tmp_path / "b")
     for a, b in zip(first, second, strict=True):
         assert a.read_bytes() == b.read_bytes()
+
+
+def test_built_lookup_script_offline(dist: Path, tmp_path: Path) -> None:
+    """Без сети (как в песочнице claude.ai) lookup.py сообщает об этом, а не падает."""
+    script = dist / "skills" / "gost-bibliography" / "scripts" / "lookup.py"
+    env = {**os.environ, "NORMOKONTROL_OFFLINE": "1", "NORMOKONTROL_CACHE_DIR": str(tmp_path / "cache")}
+    result = subprocess.run(
+        [sys.executable, str(script), "10.1016/j.patcog.2017.10.013"],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        env=env,
+        timeout=60,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert json.loads(result.stdout)[0]["error"]["error_code"] == "network_unavailable"

@@ -114,7 +114,7 @@ def test_preset_style_applied(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
     ("data", "expected"),
     [
         ([{"type": "book"}], "источник 1 (book), title: обязательный параметр не указан"),
-        ([BOOK, {"type": "thesis", "title": "Т"}], "источник 2, неизвестный тип 'thesis'"),
+        ([BOOK, {"type": "manuscript", "title": "Т"}], "источник 2, неизвестный тип 'manuscript'"),
         ([{"title": "Т"}], "источник 1, не указан тип (поле 'type')"),
         ([BOOK | {"autors": ["А"]}], "источник 1 (book), autors: неизвестный параметр"),
         ([BOOK | {"authors": [""]}], "источник 1 (book), authors: пустое имя автора"),

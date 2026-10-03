@@ -176,6 +176,22 @@ def test_formatting_is_deterministic() -> None:
             ["вид документа", "номер (number) или дата", "официальное издание"],
         ),
         ({"type": "standard", "title": "Стандарт"}, ["обозначение стандарта", "год издания"]),
+        (
+            {"type": "book_chapter", "title": "Глава"},
+            ["заглавие книги", "год издания", "место издания", "издательство", "страницы"],
+        ),
+        (
+            {"type": "conference_paper", "title": "Доклад", "url": "https://x.ru", "accessed": "2026-01-01"},
+            ["заглавие книги", "год издания"],
+        ),
+        (
+            {"type": "thesis", "title": "Диссертация"},
+            ["автор", "учёная степень", "место защиты", "год", "количество страниц"],
+        ),
+        (
+            {"type": "patent", "title": "Патент"},
+            ["номер патента", "номер заявки", "дата подачи", "дата публикации"],
+        ),
     ],
 )
 def test_missing_field_warnings(source: dict[str, object], expected: list[str]) -> None:
@@ -196,3 +212,19 @@ def test_warning_points_to_source() -> None:
     assert {w.index for w in result.warnings} == {2}
     assert all(w.source_id == "petrov2021" for w in result.warnings)
     assert "«petrov2021»" in result.warnings[0].message_ru
+
+
+def test_new_types_without_optional_parts() -> None:
+    thesis = SOURCE.validate_python({"type": "thesis", "title": "Тема", "city": "Москва", "year": 2020})
+    assert format_source(thesis) == "Тема : диссертация. – Москва, 2020. – Текст : непосредственный."
+    patent = SOURCE.validate_python({"type": "patent", "title": "Устройство"})
+    assert format_source(patent) == "Патент Российская Федерация. Устройство. – Текст : непосредственный."
+    chapter = SOURCE.validate_python(
+        {"type": "book_chapter", "title": "Chapter", "book_title": "Book", "pages": "1-2", "doi": "10.1/x"}
+    )
+    assert plain(format_source(chapter)) == (
+        "Chapter. – DOI 10.1/x. – Текст : непосредственный // Book. – P. 1–2."
+    )
+    with_doi = book(doi="10.1/y")
+    assert "ISBN" not in format_source(with_doi)
+    assert "– DOI 10.1/y. – Текст" in format_source(with_doi)
