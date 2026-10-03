@@ -7,9 +7,9 @@ from collections.abc import Sequence
 from dataclasses import dataclass, field
 from typing import Literal
 
-from normokontrol_mcp.bibliography import names
-from normokontrol_mcp.bibliography.models import Article, Book, Law, Source, Standard, Web
-from normokontrol_mcp.bibliography.names import NBSP
+from normokontrol.bibliography import names
+from normokontrol.bibliography.models import Article, Book, Law, Source, Standard, Web
+from normokontrol.bibliography.names import NBSP
 
 Order = Literal["by_citation", "alphabetical"]
 

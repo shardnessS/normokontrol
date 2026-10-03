@@ -1,14 +1,14 @@
 [project]
-name = "normokontrol-mcp"
+name = "normokontrol"
 version = "0.1.0"
-description = "MCP server for formatting and checking Russian academic works per GOST 7.32-2017 and GOST R 7.0.100-2018"
+description = "Claude skills for formatting and checking Russian academic works per GOST 7.32-2017 and GOST R 7.0.100-2018"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 authors = [
     { name = "shardness", email = "shardness.dev@gmail.com" }
 ]
-keywords = ["mcp", "gost", "normokontrol", "docx", "bibliography", "гост", "нормоконтроль"]
+keywords = ["claude", "skills", "gost", "normokontrol", "docx", "bibliography", "гост", "нормоконтроль"]
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Environment :: Console",
@@ -24,13 +24,9 @@ classifiers = [
 ]
 requires-python = ">=3.11"
 dependencies = [
-    "mcp>=2.2.0,<3",
     "pydantic>=2.7,<3",
     "pyyaml>=6",
 ]
-
-[project.scripts]
-normokontrol-mcp = "normokontrol_mcp.server:main"
 
 [build-system]
 requires = ["uv_build>=0.12.21,<0.13.0"]

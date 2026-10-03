@@ -3,8 +3,8 @@ from pathlib import Path
 import pytest
 import yaml
 
-from normokontrol_mcp.presets.describe import describe_preset
-from normokontrol_mcp.presets.loader import USER_DIR_ENV, load_preset
+from normokontrol.presets.describe import describe_preset
+from normokontrol.presets.loader import USER_DIR_ENV, load_preset
 
 
 def test_describe_base_preset() -> None:

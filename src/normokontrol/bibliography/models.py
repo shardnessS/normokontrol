@@ -8,7 +8,7 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from normokontrol_mcp.bibliography.names import InvalidNameError, parse_name
+from normokontrol.bibliography.names import InvalidNameError, parse_name
 
 _RU_DATE = re.compile(r"^(\d{1,2})\.(\d{1,2})\.(\d{4})$")
 

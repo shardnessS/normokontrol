@@ -3,9 +3,9 @@ from pathlib import Path
 import pytest
 import yaml
 
-from normokontrol_mcp.errors import PresetError, PresetNotFoundError
-from normokontrol_mcp.presets import loader
-from normokontrol_mcp.presets.loader import USER_DIR_ENV, list_presets, load_preset, merge_preset_dicts
+from normokontrol.errors import PresetError, PresetNotFoundError
+from normokontrol.presets import loader
+from normokontrol.presets.loader import USER_DIR_ENV, list_presets, load_preset, merge_preset_dicts
 
 BASE = "gost-7.32-2017"
 

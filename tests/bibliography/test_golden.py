@@ -5,9 +5,9 @@ import pytest
 import yaml
 from pydantic import TypeAdapter
 
-from normokontrol_mcp.bibliography.formatter import Style, format_source
-from normokontrol_mcp.bibliography.models import Source
-from normokontrol_mcp.bibliography.names import NBSP
+from normokontrol.bibliography.formatter import Style, format_source
+from normokontrol.bibliography.models import Source
+from normokontrol.bibliography.names import NBSP
 
 CASES: list[dict[str, Any]] = yaml.safe_load(
     (Path(__file__).parent / "golden" / "cases.yaml").read_text(encoding="utf-8")

@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-from normokontrol_mcp.bibliography.names import NBSP
-from normokontrol_mcp.presets.schema import HeadingStyle, Preset
+from normokontrol.bibliography.names import NBSP
+from normokontrol.presets.schema import HeadingStyle, Preset
 
 _ALIGN = {
     "justify": "по ширине",

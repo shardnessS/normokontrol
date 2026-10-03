@@ -9,10 +9,9 @@ from typing import Any
 
 import yaml
 from pydantic import BaseModel, ValidationError
-from pydantic_core import ErrorDetails
 
-from normokontrol_mcp.errors import PresetError, PresetNotFoundError
-from normokontrol_mcp.presets.schema import Preset
+from normokontrol.errors import PresetError, PresetNotFoundError, format_validation_errors
+from normokontrol.presets.schema import Preset
 
 BUILTIN_DIR = Path(__file__).parent / "data"
 USER_DIR_ENV = "NORMOKONTROL_PRESETS_DIR"
@@ -160,7 +159,7 @@ def _load(preset_id: str, files: dict[str, tuple[Path, bool]], chain: tuple[str,
     try:
         return Preset.model_validate(data)
     except ValidationError as exc:
-        details = "\n".join(f"- {_format_error(err)}" for err in exc.errors())
+        details = format_validation_errors(exc)
         raise PresetError(
             f"Пресет «{preset_id}» ({path}) содержит ошибки:\n{details}", location=str(path)
         ) from None
@@ -209,35 +208,3 @@ def _leaf_paths(data: dict[str, Any], prefix: str = "") -> Iterator[str]:
 def _related(a: str, b: str) -> bool:
     """True if one dotted path equals or contains the other."""
     return a == b or a.startswith(f"{b}.") or b.startswith(f"{a}.")
-
-
-_ERROR_MESSAGES = {
-    "missing": "обязательный параметр не указан",
-    "extra_forbidden": "неизвестный параметр (проверьте написание)",
-    "literal_error": "недопустимое значение {input!r}; допустимо: {expected}",
-    "greater_than": "значение должно быть больше {gt}",
-    "greater_than_equal": "значение должно быть не меньше {ge}",
-    "string_pattern_mismatch": "значение {input!r} имеет неверный формат",
-    "string_too_short": "значение не должно быть пустым",
-    "too_short": "список не должен быть пустым",
-    "float_parsing": "ожидалось число, указано {input!r}",
-    "float_type": "ожидалось число, указано {input!r}",
-    "bool_parsing": "ожидалось true или false, указано {input!r}",
-    "bool_type": "ожидалось true или false, указано {input!r}",
-    "string_type": "ожидалась строка, указано {input!r}",
-    "dict_type": "ожидался набор вложенных параметров",
-    "model_type": "ожидался набор вложенных параметров",
-    "list_type": "ожидался список",
-}
-
-
-def _format_error(err: ErrorDetails) -> str:
-    location = ".".join(str(part) for part in err["loc"])
-    ctx = err.get("ctx") or {}
-    if err["type"] == "value_error":
-        message = str(ctx.get("error", err["msg"]))
-    elif err["type"] in _ERROR_MESSAGES:
-        message = _ERROR_MESSAGES[err["type"]].format(input=err.get("input"), **ctx)
-    else:
-        message = err["msg"]
-    return f"{location}: {message}" if location else message

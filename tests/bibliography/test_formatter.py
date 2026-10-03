@@ -3,9 +3,9 @@ import datetime as dt
 import pytest
 from pydantic import TypeAdapter, ValidationError
 
-from normokontrol_mcp.bibliography.formatter import Style, format_bibliography, format_source, sort_key
-from normokontrol_mcp.bibliography.models import Article, Book, Law, Source, Standard, Web
-from normokontrol_mcp.bibliography.names import NBSP
+from normokontrol.bibliography.formatter import Style, format_bibliography, format_source, sort_key
+from normokontrol.bibliography.models import Article, Book, Law, Source, Standard, Web
+from normokontrol.bibliography.names import NBSP
 
 SOURCE = TypeAdapter(Source)
 

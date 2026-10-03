@@ -447,14 +447,14 @@ MVP: `book`, `article`, `web`, `law`, `standard`. Остальные — эта�
 
 ### Этап 3. Переход на скиллы
 - [ ] Проверить окружение песочницы claude.ai: версия Python, предустановленные пакеты (`pydantic`, `PyYAML`, `python-docx`, `lxml`), `pandoc`, `soffice`, доступ в сеть — с помощью пользователя
-- [ ] Пакет `normokontrol` вместо `normokontrol_mcp`; удалить MCP-сервер и зависимость `mcp`
+- [x] Пакет `normokontrol` вместо `normokontrol_mcp`; удалить MCP-сервер и зависимость `mcp`
 - [ ] Зависимости ядра — только из доступных в песочнице (при необходимости заменить `pydantic`)
-- [ ] CLI ядра: `presets` (`list`, `rules`, `yaml`), `format_bibliography` (вход JSON/YAML, выход текст или `--json`), структурированные ошибки
-- [ ] Скиллы `gost-rules` и `gost-bibliography`: SKILL.md, `references/`, `scripts/` с поиском ядра рядом или в `src/`
-- [ ] `tools/build_skills.py`: `dist/skills/<name>/` с копией ядра и zip-архивы
-- [ ] Плагин Claude Code: `.claude-plugin/plugin.json`, `marketplace.json`
-- [ ] Тесты: скрипты собранного скилла работают из чистой папки без установки пакета; CI собирает zip-архивы
-- [ ] `docs/install.md`: claude.ai, Claude Desktop, Claude Code
+- [x] CLI ядра: `presets` (`list`, `rules`, `yaml`), `format_bibliography` (вход JSON/YAML, выход текст или `--json`), структурированные ошибки
+- [x] Скиллы `gost-rules` и `gost-bibliography`: SKILL.md, `references/`, `scripts/` с поиском ядра рядом или в `src/`
+- [x] `tools/build_skills.py`: `dist/skills/<name>/` с копией ядра и zip-архивы
+- [x] Плагин Claude Code: `.claude-plugin/plugin.json`, `marketplace.json`
+- [x] Тесты: скрипты собранного скилла работают из чистой папки без установки пакета; CI собирает zip-архивы
+- [x] `docs/install.md`: claude.ai, Claude Desktop, Claude Code
 
 **Готово, когда:** оба скилла подключены в claude.ai и в Claude Code, список литературы оформляется из чата, пользователь проверил вручную.
 

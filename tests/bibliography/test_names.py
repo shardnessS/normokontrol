@@ -1,6 +1,6 @@
 import pytest
 
-from normokontrol_mcp.bibliography.names import (
+from normokontrol.bibliography.names import (
     NBSP,
     InvalidNameError,
     heading,

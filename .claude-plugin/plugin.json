@@ -1,0 +1,13 @@
+{
+  "name": "normokontrol",
+  "version": "0.1.0",
+  "description": "Оформление и проверка учебных работ по ГОСТ 7.32-2017 и ГОСТ Р 7.0.100-2018: требования к оформлению, список литературы.",
+  "author": {
+    "name": "shardnessS",
+    "url": "https://github.com/shardnessS"
+  },
+  "homepage": "https://github.com/shardnessS/normokontrol",
+  "repository": "https://github.com/shardnessS/normokontrol",
+  "license": "MIT",
+  "keywords": ["gost", "гост", "нормоконтроль", "список литературы", "курсовая", "вкр"]
+}
