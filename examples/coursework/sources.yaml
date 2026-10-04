@@ -1,0 +1,61 @@
+# Источники примера курсовой. Данные взяты из golden-тестов (примеры библиотек и ГОСТ Р 7.0.100-2018).
+- id: kanke2019
+  type: book
+  authors: ["Канке В. А."]
+  title: Философия
+  subtitle: учебник
+  city: Москва
+  publisher: ИНФРА-М
+  year: 2019
+  pages: 291
+  series: "Высшее образование: Бакалавриат"
+
+- id: varlamova2017
+  type: book
+  authors: ["Варламова Л. Н.", "Баюн Л. С.", "Бастрикова К. А."]
+  title: Управление документацией
+  subtitle: англо-русский аннотированный словарь стандартизированной терминологии
+  city: Москва
+  publisher: Спутник+
+  year: 2017
+  pages: 398
+  isbn: 978-5-9973-4489-4
+
+- id: gu2018
+  type: article
+  authors: ["Gu, Jiuxiang", "Wang, Zhenhua", "Kuen, Jason", "Ma, Lianyang", "Shahroudy, Amir"]
+  title: Recent advances in convolutional neural networks
+  journal: Pattern Recognition
+  year: 2018
+  volume: 77
+  pages: 354-377
+  doi: 10.1016/j.patcog.2017.10.013
+
+- id: isbn_order
+  type: web
+  title: Порядок присвоения номера ISBN
+  site: Российская книжная палата
+  year: 2018
+  url: http://bookchamber.ru/isbn.html
+  accessed: 2018-05-22
+
+- id: law273
+  type: law
+  title: Об образовании в Российской Федерации
+  act_type: Федеральный закон
+  date: 29.12.2012
+  number: 273-ФЗ
+  publication: Собрание законодательства Российской Федерации
+  year: 2012
+  issue: "53, ч. 1"
+  article: 7598
+
+- id: gost732
+  type: standard
+  designation: ГОСТ 7.32–2017
+  title: Система стандартов по информации, библиотечному и издательскому делу. Отчет о научно-исследовательской работе. Структура и правила оформления
+  kind: межгосударственный стандарт
+  city: Москва
+  publisher: Стандартинформ
+  year: 2017
+  pages: 32

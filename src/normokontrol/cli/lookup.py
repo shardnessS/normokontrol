@@ -9,8 +9,8 @@ from typing import Any
 
 from normokontrol.bibliography import lookup
 from normokontrol.bibliography.identifiers import classify
+from normokontrol.bibliography.inputs import source_to_dict
 from normokontrol.cli import run
-from normokontrol.cli.bibliography import source_to_dict
 
 
 def main(argv: Sequence[str]) -> str:

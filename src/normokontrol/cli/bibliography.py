@@ -8,39 +8,13 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
 from collections.abc import Sequence
-from dataclasses import dataclass
-from pathlib import Path
-from typing import Any
 
-import yaml
-from pydantic import TypeAdapter, ValidationError
-from pydantic_core import ErrorDetails
-
-from normokontrol.bibliography import formatter, lookup
-from normokontrol.bibliography.identifiers import classify
-from normokontrol.bibliography.models import SOURCE_TYPES, Source
+from normokontrol.bibliography import formatter
+from normokontrol.bibliography.inputs import read_data, resolve, source_to_dict
 from normokontrol.cli import run
-from normokontrol.errors import InputError, format_validation_error
+from normokontrol.errors import InputError
 from normokontrol.presets import loader
-
-_SOURCE: TypeAdapter[Source] = TypeAdapter(Source)
-
-
-@dataclass
-class Unresolved:
-    index: int
-    input: str
-    reason: str
-    error_code: str
-
-
-@dataclass
-class Resolved:
-    index: int
-    input: str
-    source: Source
 
 
 def main(argv: Sequence[str]) -> str:
@@ -69,14 +43,18 @@ def main(argv: Sequence[str]) -> str:
     if order not in ("by_citation", "alphabetical"):
         raise InputError(f"Неизвестный порядок «{order}»: допустимо by_citation или alphabetical")
 
-    sources, indices, looked_up, unresolved = _resolve(raw_items, location=args.input)
+    items = resolve(raw_items, location=args.input)
     style = formatter.Style(dash=preset.bibliography.dash, content_type=preset.bibliography.content_type)
     result = formatter.format_bibliography(
-        sources, order=order, numbering=preset.bibliography.numbering, style=style, indices=indices
+        items.sources,
+        order=order,
+        numbering=preset.bibliography.numbering,
+        style=style,
+        indices=items.indices,
     )
     warnings = [
         f"Источник {item.index} («{item.input}») найден автоматически — сверьте данные с оригиналом"
-        for item in looked_up
+        for item in items.looked_up
     ] + [warning.message_ru for warning in result.warnings]
 
     if args.json:
@@ -86,9 +64,9 @@ def main(argv: Sequence[str]) -> str:
             "warnings": [vars(warning) for warning in result.warnings],
             "looked_up": [
                 {"index": item.index, "input": item.input, "source": source_to_dict(item.source)}
-                for item in looked_up
+                for item in items.looked_up
             ],
-            "unresolved": [vars(item) for item in unresolved],
+            "unresolved": [vars(item) for item in items.unresolved],
         }
         return json.dumps(payload, ensure_ascii=False, indent=2)
     sections = [result.text] if result.text else []
@@ -97,86 +75,12 @@ def main(argv: Sequence[str]) -> str:
             "Предупреждения (данные нужно уточнить у пользователя):\n"
             + "\n".join(f"- {message}" for message in warnings)
         )
-    if unresolved:
+    if items.unresolved:
         sections.append(
             "Не удалось оформить автоматически (структурируйте эти источники и запустите снова):\n"
-            + "\n".join(f"- {item.index}. «{item.input}»: {item.reason}" for item in unresolved)
+            + "\n".join(f"- {item.index}. «{item.input}»: {item.reason}" for item in items.unresolved)
         )
     return "\n\n".join(sections)
-
-
-def _resolve(
-    raw_items: list[Any], *, location: str
-) -> tuple[list[Source], list[int], list[Resolved], list[Unresolved]]:
-    sources: list[Source] = []
-    indices: list[int] = []
-    looked_up: list[Resolved] = []
-    unresolved: list[Unresolved] = []
-    errors: list[str] = []
-    for index, item in enumerate(raw_items, start=1):
-        if isinstance(item, str):
-            identifier = classify(item)
-            if identifier is None:
-                unresolved.append(
-                    Unresolved(
-                        index,
-                        item,
-                        "не распознан DOI, ISBN или ссылка — нужны данные источника",
-                        "unrecognized",
-                    )
-                )
-                continue
-            try:
-                source = lookup.lookup(identifier, original=item)
-            except lookup.LookupFailed as exc:
-                unresolved.append(Unresolved(index, item, exc.message_ru, exc.error_code))
-                continue
-            looked_up.append(Resolved(index, item, source))
-        elif isinstance(item, dict):
-            try:
-                source = _SOURCE.validate_python(item)
-            except ValidationError as exc:
-                errors += [_source_error(index, err) for err in exc.errors()]
-                continue
-        else:
-            errors.append(f"источник {index}: ожидался объект источника или строка с DOI, ISBN, ссылкой")
-            continue
-        sources.append(source)
-        indices.append(index)
-    if errors:
-        details = "\n".join(f"- {message}" for message in errors)
-        raise InputError(f"Ошибки в данных источников:\n{details}", location=location)
-    return sources, indices, looked_up, unresolved
-
-
-def read_data(path: str) -> Any:
-    try:
-        text = sys.stdin.read() if path == "-" else Path(path).read_text(encoding="utf-8")
-    except OSError as exc:
-        raise InputError(f"Не удалось прочитать файл «{path}»: {exc.strerror}", location=path) from None
-    except UnicodeDecodeError:
-        raise InputError(f"Файл «{path}» должен быть в кодировке UTF-8", location=path) from None
-    try:
-        return yaml.safe_load(text)
-    except yaml.YAMLError as exc:
-        raise InputError(f"Файл «{path}» не является корректным JSON/YAML: {exc}", location=path) from None
-
-
-def source_to_dict(source: Source) -> dict[str, Any]:
-    """Source as JSON without empty fields — ready to paste into sources.json."""
-    data = source.model_dump(mode="json", exclude_none=True)
-    return {key: value for key, value in data.items() if value != []}
-
-
-def _source_error(index: int, err: ErrorDetails) -> str:
-    """«источник 3 (book), authors: …» instead of pydantic's «book.authors»."""
-    loc = list(err["loc"])
-    prefix = f"источник {index}"
-    if loc and str(loc[0]) in SOURCE_TYPES:
-        prefix += f" ({loc[0]})"
-        loc = loc[1:]
-    message = format_validation_error({**err, "loc": tuple(loc)})
-    return f"{prefix}, {message}"
 
 
 def entry() -> int:

@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import zipfile
@@ -18,7 +19,11 @@ sys.path.insert(0, str(ROOT / "tools"))
 import build_skills  # noqa: E402
 
 SKILLS = sorted(p.name for p in (ROOT / "skills").iterdir() if (p / "SKILL.md").is_file())
-SCRIPTS = {"gost-rules": "presets.py", "gost-bibliography": "format_bibliography.py"}
+SCRIPTS = {
+    "gost-rules": "presets.py",
+    "gost-bibliography": "format_bibliography.py",
+    "gost-document": "build.py",
+}
 BOOK = {"type": "book", "authors": ["Иванов И. И."], "title": "Книга", "city": "Москва", "publisher": "Юрайт"}
 
 
@@ -181,3 +186,14 @@ def test_built_lookup_script_offline(dist: Path, tmp_path: Path) -> None:
     )
     assert result.returncode == 0, result.stderr
     assert json.loads(result.stdout)[0]["error"]["error_code"] == "network_unavailable"
+
+
+def test_built_document_script(dist: Path, tmp_path: Path) -> None:
+    """Собранный gost-document собирает пример курсовой из чужой папки."""
+    example = tmp_path / "пример"
+    shutil.copytree(ROOT / "examples" / "coursework", example, ignore=shutil.ignore_patterns("*.docx"))
+    script = dist / "skills" / "gost-document" / "scripts" / "build.py"
+    result = run_script(script, str(example / "черновик.md"), cwd=tmp_path)
+    assert result.returncode == 0, result.stderr
+    assert "источников: 6" in result.stdout
+    assert (example / "черновик_gost.docx").is_file()
